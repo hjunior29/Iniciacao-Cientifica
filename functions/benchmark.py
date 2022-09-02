@@ -116,6 +116,7 @@ def MICHALEWICS(X):
     Y = - SUM
     return Y
 
+# ALGORITMO HILL CLIMBING
 def HILL_CLIMBING(N_CITIES):
     if N_CITIES < 2:
         print("Número de cidades inválido")
