@@ -22,13 +22,10 @@
 ################################################################################
 # BIBLIOTECAS NATIVAS PYTHON
 import numpy as np
-import random
+import hill_climbing_function
 
 # FUNÇÃO SPHERE
 def SPHERE(X):
-    """
-    Sphere benchmark function D-dimension
-    """
     DIM = len(X)
     SUM = 0
     for I_COUNT in range(DIM):
@@ -39,9 +36,6 @@ def SPHERE(X):
 
 # FUNÇÃO ROSENBROCK
 def ROSENBROCK(X):
-    """
-    Rosenbrock benchmark function D-dimension
-    """
     DIM = len(X)
     SUM = 0
     for I_COUNT in range(DIM - 1):
@@ -54,9 +48,6 @@ def ROSENBROCK(X):
 
 # FUNÇÃO RASTRIGIN
 def RASTRIGIN(X):
-    """
-    Rastrigin benchmark function D-dimension
-    """
     DIM = len(X)
     SUM = 0
     for I_COUNT in range(DIM):
@@ -67,10 +58,6 @@ def RASTRIGIN(X):
 
 # FUNÇÃO ACKLEY
 def ACKLEY(X):
-    """
-    Ackley benchmark function D-dimension
-    https://www.sfu.ca/~ssurjano/ackley.html
-    """
     DIM = len(X)
     SUM1 = 0
     SUM2 = 0
@@ -88,10 +75,6 @@ def ACKLEY(X):
 
 # FUNÇÃO GRIEWANK
 def GRIEWANK(X):
-    """
-    Griewank benchmark function D-dimension
-    https://www.sfu.ca/~ssurjano/griewank.html
-    """
     DIM = len(X)
     SUM = 0
     for I_COUNT in range(DIM):
@@ -103,10 +86,6 @@ def GRIEWANK(X):
 
 # FUNÇÃO ZAKHAROV
 def ZAKHAROV(X):
-    """
-    Zakharov benchmark function D-dimension
-    https://www.sfu.ca/~ssurjano/zakharov.html
-    """
     DIM = len(X)
     SUM_1 = 0
     SUM_2 = 0
@@ -119,10 +98,6 @@ def ZAKHAROV(X):
 
 # FUNÇÃO EASOM
 def EASOM(X):
-    """
-    Easom benchmark function D-dimension
-    https://www.sfu.ca/~ssurjano/easom.html
-    """
     X_1 = X[0]
     X_2 = X[1]
     FACT_1 = - np.cos(X_1) * np.cos(X_2)
@@ -132,10 +107,6 @@ def EASOM(X):
 
 # FUNÇÃO MICHALEWICS
 def MICHALEWICS(X):
-    """
-    Michalewicz benchmark function D-dimension
-    https://www.sfu.ca/~ssurjano/michal.html
-    """
     DIM = len(X)
     SUM = 0
     M = 10
@@ -145,71 +116,17 @@ def MICHALEWICS(X):
     Y = - SUM
     return Y
 
-class HILL_CLIMBING:
+def HILL_CLIMBING(N_CITIES):
+    if N_CITIES < 2:
+        print("Número de cidades inválido")
+        return
+    X = hill_climbing_function.PROBLEM_GENERATOR(N_CITIES)
+    for I_COUNT in range(N_CITIES):
+        print(hill_climbing_function.HILL_CLIMBING(X))
 
-    def randomSolution(tsp):
-        cities = list(range(len(tsp)))
-        solution = []
+HILL_CLIMBING(80)
 
-        for i in range(len(tsp)):
-            randomCity = cities[random.randint(0, len(cities) - 1)]
-            solution.append(randomCity)
-            cities.remove(randomCity)
 
-        return solution
-
-    def routeLength(tsp, solution):
-        routeLength = 0
-        for i in range(len(solution)):
-            routeLength += tsp[solution[i - 1]][solution[i]]
-        return routeLength
-
-    def getNeighbours(solution):
-        neighbours = []
-        for i in range(len(solution)):
-            for j in range(i + 1, len(solution)):
-                neighbour = solution.copy()
-                neighbour[i] = solution[j]
-                neighbour[j] = solution[i]
-                neighbours.append(neighbour)
-        return neighbours
-
-    def getBestNeighbour(tsp, neighbours):
-        bestRouteLength = routeLength(tsp, neighbours[0])
-        bestNeighbour = neighbours[0]
-        for neighbour in neighbours:
-            currentRouteLength = routeLength(tsp, neighbour)
-            if currentRouteLength < bestRouteLength:
-                bestRouteLength = currentRouteLength
-                bestNeighbour = neighbour
-        return bestNeighbour, bestRouteLength
-
-    def hillClimbing(tsp):
-        currentSolution = randomSolution(tsp)
-        currentRouteLength = routeLength(tsp, currentSolution)
-        neighbours = getNeighbours(currentSolution)
-        bestNeighbour, bestNeighbourRouteLength = getBestNeighbour(tsp, neighbours)
-
-        while bestNeighbourRouteLength < currentRouteLength:
-            currentSolution = bestNeighbour
-            currentRouteLength = bestNeighbourRouteLength
-            neighbours = getNeighbours(currentSolution)
-            bestNeighbour, bestNeighbourRouteLength = getBestNeighbour(tsp, neighbours)
-
-        return currentSolution, currentRouteLength
-
-    def main():
-        tsp = [
-            [0, 400, 500, 300],
-            [400, 0, 300, 500],
-            [500, 300, 0, 400],
-            [300, 500, 400, 0]
-        ]
-
-        print(hillClimbing(tsp))
-
-    if __name__ == "__main__":
-        main()
 
 #   /$$$$$$  /$$$$$$$  /$$$$$$$$ /$$$$$$$$       /$$$$$$$$ /$$$$$$$$  /$$$$$$  /$$   /$$ /$$   /$$  /$$$$$$  /$$        /$$$$$$   /$$$$$$  /$$$$$$ /$$$$$$$$  /$$$$$$
 #  /$$__  $$| $$__  $$| $$_____/| $$_____/      |__  $$__/| $$_____/ /$$__  $$| $$  | $$| $$$ | $$ /$$__  $$| $$       /$$__  $$ /$$__  $$|_  $$_/| $$_____/ /$$__  $$

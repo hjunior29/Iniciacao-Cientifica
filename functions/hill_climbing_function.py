@@ -1,66 +1,66 @@
+import random
 
-class HILL_CLIMBING:
+def RANDOM_SOLUTION(X):
+    CITIES = list(range(len(X)))
+    SOLUTION = []
 
-    def randomSolution(tsp):
-        cities = list(range(len(tsp)))
-        solution = []
+    for I_COUNT in range(len(X)):
+        RANDOM_CITY = CITIES[random.randint(0, len(CITIES) - 1)]
+        SOLUTION.append(RANDOM_CITY)
+        CITIES.remove(RANDOM_CITY)
 
-        for i in range(len(tsp)):
-            randomCity = cities[random.randint(0, len(cities) - 1)]
-            solution.append(randomCity)
-            cities.remove(randomCity)
+    return SOLUTION
 
-        return solution
+def ROUTE_LENGTH(X, SOLUTION):
+    ROUTE_LENGTH = 0
+    for I_COUNT in range(len(SOLUTION)):
+        ROUTE_LENGTH += X[SOLUTION[I_COUNT - 1]][SOLUTION[I_COUNT]]
+    return ROUTE_LENGTH
 
-    def routeLength(tsp, solution):
-        routeLength = 0
-        for i in range(len(solution)):
-            routeLength += tsp[solution[i - 1]][solution[i]]
-        return routeLength
+def GET_NEIGHBOURS(SOLUTION):
+    NEIGHBOURS = []
+    for I_COUNT in range(len(SOLUTION)):
+        for J_COUNT in range(I_COUNT + 1, len(SOLUTION)):
+            NEIGHBOUR = SOLUTION.copy()
+            NEIGHBOUR[I_COUNT] = SOLUTION[J_COUNT]
+            NEIGHBOUR[J_COUNT] = SOLUTION[I_COUNT]
+            NEIGHBOURS.append(NEIGHBOUR)
+    return NEIGHBOURS
 
-    def getNeighbours(solution):
-        neighbours = []
-        for i in range(len(solution)):
-            for j in range(i + 1, len(solution)):
-                neighbour = solution.copy()
-                neighbour[i] = solution[j]
-                neighbour[j] = solution[i]
-                neighbours.append(neighbour)
-        return neighbours
+def GET_BEST_NEIGHBOUR(X, NEIGHBOURS):
+    BEST_ROUTE_LENGTH = ROUTE_LENGTH(X, NEIGHBOURS[0])
+    BEST_NEIGHBOUR = NEIGHBOURS[0]
+    for NEIGHBOUR in NEIGHBOURS:
+        CURRENT_ROUTE_LENGTH = ROUTE_LENGTH(X, NEIGHBOUR)
+        if CURRENT_ROUTE_LENGTH < BEST_ROUTE_LENGTH:
+            BEST_ROUTE_LENGTH = CURRENT_ROUTE_LENGTH
+            BEST_NEIGHBOUR = NEIGHBOUR
+    return BEST_NEIGHBOUR, BEST_ROUTE_LENGTH
 
-    def getBestNeighbour(tsp, neighbours):
-        bestRouteLength = routeLength(tsp, neighbours[0])
-        bestNeighbour = neighbours[0]
-        for neighbour in neighbours:
-            currentRouteLength = routeLength(tsp, neighbour)
-            if currentRouteLength < bestRouteLength:
-                bestRouteLength = currentRouteLength
-                bestNeighbour = neighbour
-        return bestNeighbour, bestRouteLength
+def HILL_CLIMBING(X):
+    CURRENT_SOLUTION = RANDOM_SOLUTION(X)
+    CURRENT_ROUTE_LENGTH = ROUTE_LENGTH(X, CURRENT_SOLUTION)
+    NEIGHBOURS = GET_NEIGHBOURS(CURRENT_SOLUTION)
+    BEST_NEIGHBOUR, BEST_NEIGHBOUR_ROUTE_LENGTH = GET_BEST_NEIGHBOUR(X, NEIGHBOURS)
 
-    def hillClimbing(tsp):
-        currentSolution = randomSolution(tsp)
-        currentRouteLength = routeLength(tsp, currentSolution)
-        neighbours = getNeighbours(currentSolution)
-        bestNeighbour, bestNeighbourRouteLength = getBestNeighbour(tsp, neighbours)
+    while BEST_NEIGHBOUR_ROUTE_LENGTH < CURRENT_ROUTE_LENGTH:
+        CURRENT_SOLUTION = BEST_NEIGHBOUR
+        CURRENT_ROUTE_LENGTH = BEST_NEIGHBOUR_ROUTE_LENGTH
+        NEIGHBOURS = GET_NEIGHBOURS(CURRENT_SOLUTION)
+        BEST_NEIGHBOUR, BEST_NEIGHBOUR_ROUTE_LENGTH = GET_BEST_NEIGHBOUR(X, NEIGHBOURS)
 
-        while bestNeighbourRouteLength < currentRouteLength:
-            currentSolution = bestNeighbour
-            currentRouteLength = bestNeighbourRouteLength
-            neighbours = getNeighbours(currentSolution)
-            bestNeighbour, bestNeighbourRouteLength = getBestNeighbour(tsp, neighbours)
+    return CURRENT_SOLUTION, CURRENT_ROUTE_LENGTH
 
-        return currentSolution, currentRouteLength
-
-    def main():
-        tsp = [
-            [0, 400, 500, 300],
-            [400, 0, 300, 500],
-            [500, 300, 0, 400],
-            [300, 500, 400, 0]
-        ]
-
-        print(hillClimbing(tsp))
-
-    if __name__ == "__main__":
-        main()
+def PROBLEM_GENERATOR(N_CITIES):
+    X = []
+    for I_COUNT in range(N_CITIES):
+        DISTANCES = []
+        for J_COUNT in range(N_CITIES):
+            if J_COUNT == I_COUNT:
+                DISTANCES.append(0)
+            elif J_COUNT < I_COUNT:
+                DISTANCES.append(X[J_COUNT][I_COUNT])
+            else:
+                DISTANCES.append(random.randint(10, 1000))
+        X.append(DISTANCES)
+    return X
